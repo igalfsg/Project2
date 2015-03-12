@@ -21,7 +21,7 @@ void printArray(int * array, int size){
 }
  int cmpfunc (const void * a, const void * b)
 {
-   return ( *(int*)a - *(int*)b );
+   return (a - b);
 }
  
 inline void radixSort(int * array, int size){
@@ -40,7 +40,7 @@ inline void radixSort(int * array, int size){
     else if(array[i] > largestNum)
       largestNum = array[i];
   }
-  printf("wrongs %d \n",wrongs);
+  //printf("wrongs %d \n",wrongs);
   if (wrongs > (size - wrongs))
     {
       for( i = 0; i < (size / 2); i++)
@@ -51,13 +51,13 @@ inline void radixSort(int * array, int size){
 	}
       wrongs = size - wrongs - 1;
     }
-  if (wrongs > 100)  
-    {
+  if (wrongs == 0)
+      return;
   for(i = 0; i < size; i++){
     if(array[i]< 0){
       negative[j] = (-1) * array[i];
       if (negative[i] > neglargest)
-	neglargest = negative[j];
+  	neglargest = negative[j];
       array[i] = 0;
       j++;
     }
@@ -121,22 +121,32 @@ inline void radixSort(int * array, int size){
       }
       for (i=0; i < j; i++)
 	array[i]= negative[j-1-i] * (-1);
+      //  }
+      //else {
+  
+    //}
+}
+inline void compy(int * array, int size){
+  int i;
+  int wrongs = 0;
+  int tempo;
+  for(i = 0; i < size; i++){
+    if(i >= 1 && array[i] < array[i - 1])
+      wrongs++;
+  }
+  if (wrongs > (size - wrongs))
+    {
+      for( i = 0; i < (size / 2); i++)
+	{
+	  tempo = array[i];
+	  array[i] = array[size - i -1];
+	  array[size - i -1] = tempo;
+	}
+      wrongs = size - wrongs - 1;
     }
-  else {
-    if (wrongs == 0)
+  if (wrongs == 0)
       return;
-    for (i = 1 ; i <= size - 1; i++) {
-    j = i;
- 
-    while ( j > 0 && array[j] < array[j-1]) {
-      tempo          = array[j];
-      array[j]   = array[j-1];
-      array[j-1] = tempo;
- 
-      j--;
-    }
-  }
-  }
+ qsort(array, size, sizeof(int), cmpfunc);
 }
  
 int main(){
@@ -146,43 +156,142 @@ int main(){
   int size =1000000;
   int list[1000000];
   int check[size];
+  int check1[size];
   int i;
   clock_t start, end;
   double cpu_timeu;
 
   for(i = 0; i< size; i++)
     {
-      list[i] = size;
+      //      if (i % 2){
+      list[i] =( size - i);
       check[i] = list[i];
+      check1[i] = check[i];
+      // }
+      //else
+      //{
+      //  list[i] =( i - size);
+      //  check[i] = list[i];
+      //}
+      }
+
+  printf("Decending\n");
+  /* start = clock(); */
+  /* radixSort(&list[0], size); */
+  /* end = clock(); */
+  /* cpu_timeu = ((double) (end - start)) / CLOCKS_PER_SEC; */
+  /* fprintf(stdout,"readix %f\n ", cpu_timeu); */
+
+  //printArray(&list[0], size);
+ 
+  start = clock();
+  qsort(check, size, sizeof(int), cmpfunc);
+  end = clock();
+  cpu_timeu = ((double) (end - start)) / CLOCKS_PER_SEC;
+  fprintf(stdout,"qsort time = %f \n", cpu_timeu);
+  
+  start = clock();
+  compy(list,size);
+  end = clock();
+  cpu_timeu = ((double) (end - start)) / CLOCKS_PER_SEC;
+  fprintf(stdout,"merge time = %f \n", cpu_timeu);
+  for(i = 0; i< size; i++)
+    {
+      // if (check[i] != list[i])
+	//	fprintf(stdout,"you fucked up son: %d, %d \n", check[i], list[i]);
+     
     }
 
-  for (i = 25; i < 200; i++)
+  for(i = 0; i< size; i++)
+    {
+      //      if (i % 2){
+      list[i] = rand() % 2000000;
+      check[i] = list[i];
+      check1[i] = check[i];
+      // }
+      //else
+      //{
+      //  list[i] =( i - size);
+      //  check[i] = list[i];
+      //}
+      }
+
+  printf("Random\n");
+  start = clock();
+  compy(list, size);
+  end = clock();
+  cpu_timeu = ((double) (end - start)) / CLOCKS_PER_SEC;
+  fprintf(stdout,"readix %f\n ", cpu_timeu);
+
+ 
+  start = clock();
+  qsort(check, size, sizeof(int), cmpfunc);
+  end = clock();
+  cpu_timeu = ((double) (end - start)) / CLOCKS_PER_SEC;
+  fprintf(stdout,"qsort time = %f \n", cpu_timeu);
+  
+
+for(i = 0; i< size; i++)
+    {
+      //      if (i % 2){
+      list[i] = size % 2;
+      check[i] = list[i];
+      check1[i] = check[i];
+      // }
+      //else
+      //{
+      //  list[i] =( i - size);
+      //  check[i] = list[i];
+      //}
+      }
+
+  /* for (i = 25; i < 200; i++) */
+  /*   { */
+  /*     list[i] = rand(); */
+  /*     check[i] = list[i]; */
+  /*   } */
+  
+  printf("1 0\n");
+  start = clock();
+  compy(&list[0], size);
+  end = clock();
+  cpu_timeu = ((double) (end - start)) / CLOCKS_PER_SEC;
+  fprintf(stdout,"readix %f\n ", cpu_timeu);
+
+ 
+  start = clock();
+  qsort(check, size, sizeof(int), cmpfunc);
+  end = clock();
+  cpu_timeu = ((double) (end - start)) / CLOCKS_PER_SEC;
+  fprintf(stdout,"qsort time = %f \n", cpu_timeu);
+ 
+
+for(i = 0; i< size; i++)
+    {
+      list[i] = size - i;
+      check[i] = list[i];
+      check1[i] = check[i];
+      }
+
+  for (i = 25; i < 200; i += 15)
     {
       list[i] = rand();
       check[i] = list[i];
     }
   
-  //printf("\nUnsorted List: ");
-  //printArray(&list[0], size);
+  printf("1 0\n");
   start = clock();
-  radixSort(&list[0], size);
+  compy(list, size);
   end = clock();
   cpu_timeu = ((double) (end - start)) / CLOCKS_PER_SEC;
-  fprintf(stdout,"%f ", cpu_timeu);
+  fprintf(stdout,"readix %f\n ", cpu_timeu);
 
-  //printArray(&list[0], size);
-  printf("\n");
+ 
   start = clock();
   qsort(check, size, sizeof(int), cmpfunc);
   end = clock();
   cpu_timeu = ((double) (end - start)) / CLOCKS_PER_SEC;
-  fprintf(stdout,"qsort time = %f ", cpu_timeu);
+  fprintf(stdout,"qsort time = %f \n", cpu_timeu);
   
-  for(i = 0; i< size; i++)
-    {
-      if (check[i] != list[i])
-	fprintf(stdout,"you fucked up son: %d, %d \n", check[i], list[i]);
-     
-    }
   return 0;
 }
